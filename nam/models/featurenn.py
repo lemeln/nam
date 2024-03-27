@@ -46,7 +46,8 @@ class FeatureNN(torch.nn.Module):
 
         ## Hidden Layers
         for in_features, out_features in zip(all_hidden_sizes, all_hidden_sizes[1:]):
-            layers.append(LinReLU(in_features, out_features))
+            layers.append(nn.Linear(in_features, out_features))
+            layers.append(nn.ReLU())
 
         ## Last Linear Layer
         layers.append(nn.Linear(in_features=all_hidden_sizes[-1], out_features=1, bias=False))
