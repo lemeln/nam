@@ -15,7 +15,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "torch",
-        "sklearn",
+        "scikit-learn",
         "numpy",
         "pandas",
         "loguru",
