@@ -15,7 +15,8 @@ class NAM(torch.nn.Module):
         num_units: list,
         hidden_sizes: list,
         dropout: float,
-        feature_dropout: float
+        feature_dropout: float,
+        activation: str = 'relu'
     ) -> None:
         super(NAM, self).__init__()
         assert len(num_units) == num_inputs
@@ -24,6 +25,7 @@ class NAM(torch.nn.Module):
         self.hidden_sizes = hidden_sizes
         self.dropout = dropout
         self.feature_dropout = feature_dropout
+        self.activation = activation
 
         self.dropout_layer = nn.Dropout(p=self.feature_dropout)
 
@@ -32,8 +34,9 @@ class NAM(torch.nn.Module):
             FeatureNN(
                 input_shape=1, 
                 num_units=self.num_units[i], 
-                dropout=self.dropout, feature_num=i, 
-                hidden_sizes=self.hidden_sizes
+                dropout=self.dropout, 
+                hidden_sizes=self.hidden_sizes,
+                activation=self.activation
             )
             for i in range(num_inputs)
         ])
@@ -63,7 +66,8 @@ class MultiTaskNAM(torch.nn.Module):
         num_tasks: int,
         hidden_sizes: list,
         dropout: float,
-        feature_dropout: float
+        feature_dropout: float,
+        activation: str = 'relu',
     ) -> None:
         super(MultiTaskNAM, self).__init__()
 
@@ -75,6 +79,7 @@ class MultiTaskNAM(torch.nn.Module):
         self.hidden_sizes = hidden_sizes
         self.dropout = dropout
         self.feature_dropout = feature_dropout
+        self.activation = activation
 
         self.dropout_layer = nn.Dropout(p=self.feature_dropout)
 
@@ -82,12 +87,12 @@ class MultiTaskNAM(torch.nn.Module):
         self.feature_nns = nn.ModuleList([
             MultiFeatureNN(
                     input_shape=1,
-                    feature_num=i,
                     num_units=self.num_units[i],
                     num_subnets=self.num_subnets,
                     num_tasks=self.num_tasks,
                     dropout=self.dropout,
-                    hidden_sizes=self.hidden_sizes
+                    hidden_sizes=self.hidden_sizes,
+                    activation=self.activation
                 )
             for i in range(self.num_inputs)
         ])

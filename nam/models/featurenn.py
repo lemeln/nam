@@ -12,7 +12,6 @@ class FeatureNN(torch.nn.Module):
     def __init__(
         self,
         input_shape: int,
-        feature_num: int,
         num_units: int,
         dropout: float,
         hidden_sizes: list = [64, 32],
@@ -21,25 +20,26 @@ class FeatureNN(torch.nn.Module):
         """Initializes FeatureNN hyperparameters.
 
         Args:
+          input_shape: Dimensionality of input data.
           num_units: Number of hidden units in first hidden layer.
           dropout: Coefficient for dropout regularization.
-          feature_num: Feature Index used for naming the hidden layers.
+          hidden_sizes: List of hidden dimensions for each layer.
+          activation: Activation function of first layer (relu or exu).
         """
         super(FeatureNN, self).__init__()
-        self._input_shape = input_shape
-        self._num_units = num_units
-        self._feature_num = feature_num
-        self._hidden_sizes = hidden_sizes
-        self._activation = activation
+        self.input_shape = input_shape
+        self.num_units = num_units
+        self.hidden_sizes = hidden_sizes
+        self.activation = activation
         
-        all_hidden_sizes = [self._num_units] + self._hidden_sizes
+        all_hidden_sizes = [self.num_units] + self.hidden_sizes
 
         layers = []
 
         self.dropout = nn.Dropout(p=dropout)
 
         ## First layer is ExU
-        if self._activation == "exu":
+        if self.activation == "exu":
             layers.append(ExU(in_features=input_shape, out_features=num_units))
         else:
             layers.append(LinReLU(in_features=input_shape, out_features=num_units))
@@ -67,7 +67,6 @@ class MultiFeatureNN(torch.nn.Module):
     def __init__(
         self,
         input_shape: int,
-        feature_num: int,
         num_units: int,
         num_subnets: int,
         num_tasks: int,
@@ -77,20 +76,22 @@ class MultiFeatureNN(torch.nn.Module):
     ) -> None:
         """Initializes FeatureNN hyperparameters.
         Args:
+            input_shape: Dimensionality of input data.
             num_units: Number of hidden units in first hidden layer.
+            num_tasks: Number of tasks.
+            num_subnets: Number of subnets.
             dropout: Coefficient for dropout regularization.
-            feature_num: Feature Index used for naming the hidden layers.
+            hidden_sizes: List of hidden dimensions for each layer.
+            activation: Activation function of first layer (relu or exu).
         """
         super(MultiFeatureNN, self).__init__()
         subnets = [
             FeatureNN(
                 input_shape=input_shape,
-                feature_num=feature_num,
                 num_units=num_units,
                 dropout=dropout,
                 hidden_sizes=hidden_sizes,
                 activation=activation
-                
             )
             for i in range(num_subnets)
         ]
