@@ -32,7 +32,7 @@ class NAMBase:
         val_split: float = 0.15,
         device: str = 'cpu',
         lr: float = 0.02082,
-        decay_rate: float = 0.995,
+        decay_rate: float = 0.0,
         output_reg: float = 0.2078,
         l2_reg: float = 0.0,
         save_model_frequency: int = 10,
@@ -106,7 +106,7 @@ class NAMBase:
             X = X.to_numpy()
         if isinstance(y, (pd.DataFrame, pd.Series)):
             y = y.to_numpy()
-        if isinstance(y, (pd.DataFrame, pd.Series)):
+        if isinstance(w, (pd.DataFrame, pd.Series)):
             w = w.to_numpy()
 
         self._set_random_state()
@@ -169,9 +169,7 @@ class NAMBase:
             X = X.to_numpy()
         # X = self._preprocessor.transform(X)
         X = torch.tensor(X, requires_grad=False, dtype=torch.float)
-        predictions = np.zeros((X.shape[0],))
-        if self.num_tasks > 1:
-            predictions = np.zeros((X.shape[0], self.num_tasks))
+        predictions = np.zeros((X.shape[0], self.num_tasks))
 
         for model in self.models:
             preds, _ = model.forward(X)
@@ -281,7 +279,7 @@ class NAMClassifier(NAMBase):
             X = X.to_numpy()
         if isinstance(y, (pd.DataFrame, pd.Series)):
             y = y.to_numpy()
-        if isinstance(y, (pd.DataFrame, pd.Series)):
+        if isinstance(w, (pd.DataFrame, pd.Series)):
             w = w.to_numpy()
             
         if len(np.unique(y[~np.isnan(y)])) > 2:

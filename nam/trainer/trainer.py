@@ -202,7 +202,7 @@ class Trainer:
 
         optimizer = torch.optim.Adam(model.parameters(),
                                         lr=self.lr,
-                                        weight_decay=self.decay_rate)
+                                        weight_decay=0)
         
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
                                             gamma=0.995,

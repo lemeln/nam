@@ -95,7 +95,7 @@ class MultiFeatureNN(torch.nn.Module):
             for i in range(num_subnets)
         ]
         self.feature_nns = nn.ModuleList(subnets)
-        self.linear = torch.nn.Linear(num_subnets, num_tasks, bias=False)
+        self.linear = torch.nn.Linear(num_subnets, num_tasks)
 
     def forward(self, inputs) -> torch.Tensor:
         """Computes FeatureNN output with either evaluation or training mode."""

@@ -47,7 +47,7 @@ class NAM(torch.nn.Module):
     def forward(self, inputs: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         individual_outputs = self.calc_outputs(inputs)
         conc_out = torch.cat(individual_outputs, dim=-1)
-        dropout_out = self.dropout_layer(conc_out)
+        dropout_out = self.dropout_layer(conc_out).unsqueeze(1)
 
         out = torch.sum(dropout_out, dim=-1)
         return out + self._bias, dropout_out

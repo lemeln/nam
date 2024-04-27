@@ -10,7 +10,7 @@ def weighted_loss(loss_func: Callable, logits: torch.Tensor, targets: torch.Tens
     loss *= weights
     loss = torch.sum(loss, dim=0)
     loss = loss / torch.sum(weights, dim=0)
-    return torch.mean(loss)
+    return loss
 
 
 def reg_penalty(fnn_out: torch.Tensor, model: nn.Module,
@@ -29,9 +29,8 @@ def reg_penalty(fnn_out: torch.Tensor, model: nn.Module,
     """
 
     def features_loss(per_feature_outputs):
-        b, f = per_feature_outputs.shape[0], per_feature_outputs.shape[-1]
-        out = torch.sum(per_feature_outputs ** 2) / (b * f)
-
+        b, f = per_feature_outputs.shape[0], per_feature_outputs.shape[2]
+        out = (per_feature_outputs ** 2).sum(dim=0).sum(dim=1) / (b * f)
         return output_regularization * out
 
     def weight_decay(model: nn.Module) -> torch.Tensor:
@@ -54,6 +53,7 @@ def make_penalized_loss_func(loss_func, regression, output_regularization, l2_re
     def penalized_loss_func(logits, targets, weights, fnn_out, model):
         loss = weighted_loss(loss_func, logits, targets, weights)
         loss += reg_penalty(fnn_out, model, output_regularization, l2_regularization)
+        loss = torch.sum(loss) # Sum over tasks
         return loss
 
     if not loss_func:

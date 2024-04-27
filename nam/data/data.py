@@ -38,6 +38,10 @@ class NAMDataset(torch.utils.data.Dataset):
             # contributions from these examples will get zeroed out downstream
             # but leaving nan values will cause a crash.
             self.y[self.y != self.y] = 0.0
+        else:
+            # Create task dimension in single task setting for consistency.
+            self.y = self.y.unsqueeze(1)
+            self.w = self.w.unsqueeze(1)
 
     def __len__(self):
         return len(self.X)
